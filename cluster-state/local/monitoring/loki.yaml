@@ -256,5 +256,3 @@ spec:
   syncPolicy:
     syncOptions:
     - RespectIgnoreDifferences=true
-    automated:
-      selfHeal: true
