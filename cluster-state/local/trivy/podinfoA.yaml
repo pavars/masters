@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trivy-operator
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  source:
+    repoURL: https://aquasecurity.github.io/helm-charts/
+    chart: trivy-operator
+    targetRevision: "main"
+    helm:
+      values: |
+        fullnameOverride: "trivy-operator"
+
+        operator:
+          # replicas the number of replicas of the operator's pod
+          replicas: 1
+
+        serviceMonitor:
+          enabled: true
+          namespace: "monitoring"
+          interval: ""
+          labels:
+            prometheus: main
+
+        trivy:
+          # ignoreUnfixed is the flag to show only fixed vulnerabilities in
+          # vulnerabilities reported by Trivy. Set to true to enable it.
+          #
+          ignoreUnfixed: false
+
+          # resources resource requests and limits
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100M
+              # ephemeral-storage: "2Gi"
+            limits:
+              cpu: 500m
+              memory: 500M
+              # ephemeral-storage: "2Gi"
+
+  destination:
+    name: in-cluster
+    namespace: trivy
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true

@@ -54,7 +54,7 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: spinwise-argocd-ssh-repo
+  name: pavars-argocd-repo
   namespace: argocd
   labels:
     argocd.argoproj.io/secret-type: repository
@@ -71,3 +71,16 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 stringData:
   url: https://github.com/google/cadvisor.git
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aqua-helm-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://aquasecurity.github.io/helm-charts/
+  type: helm
+  name: aqua
