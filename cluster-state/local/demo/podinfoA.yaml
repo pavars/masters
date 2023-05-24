@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podinfo-a
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: ops
+  source:
+    repoURL: https://stefanprodan.github.io/podinfo
+    chart: podinfo
+    targetRevision: "6.3.6"
+    helm:
+      values: |
+        replicaCount: 0
+
+        ui:
+          color: "#34577c"
+          message: "Demo application"
+          logo: ""
+        image:
+          repository: ghcr.io/stefanprodan/podinfo
+          tag: 6.3.6
+          pullPolicy: IfNotPresent
+
+        # Kubernetes Service settings
+        service:
+          enabled: true
+
+        # enable h2c protocol (non-TLS version of HTTP/2)
+        h2c:
+          enabled: false
+
+        serviceAccount:
+          enabled: false
+
+        ingress:
+          enabled: false
+
+  destination:
+    name: in-cluster
+    namespace: test
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true
