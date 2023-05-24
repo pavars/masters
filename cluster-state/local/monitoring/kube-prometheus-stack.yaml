@@ -45,7 +45,8 @@ spec:
 
         prometheus-node-exporter:
           fullnameOverride: node-exporter
-          hostRootFsMount: false
+          hostRootFsMount:
+            enabled: false
           prometheus:
             monitor:
               enabled: true
