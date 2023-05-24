@@ -120,11 +120,13 @@ master # Projekta mape
 │   ├── local # lokālais kubernetes klāsteris
 │   │   ├── demo # demo vide ar podinfo
 │   │   │   └── podinfoA.yaml
-│   │   └── monitoring # monitoringa vide
-│   │       ├── grafana.yaml # [Grafana helm chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana)
-│   │       ├── kube-prometheus-stack.yaml # [kube-prometheus-stack helm chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
-│   │       ├── loki.yaml # [Loki helm chart](https://github.com/grafana/loki/tree/main/production/helm/loki)
-│   │       └── promtail.yaml #[Promtail helm chart](https://github.com/grafana/helm-charts/tree/main/charts/promtail)
+│   │   ├── monitoring # monitoringa vide
+│   │   |   ├── grafana.yaml # [Grafana helm chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana)
+│   │   |   ├── kube-prometheus-stack.yaml # [kube-prometheus-stack helm chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
+│   │   |   ├── loki.yaml # [Loki helm chart](https://github.com/grafana/loki/tree/main/production/helm/loki)
+│   │   |   └── promtail.yaml # [Promtail helm chart](https://github.com/grafana/helm-charts/tree/main/charts/promtail)
+│   │   └── trivy-system
+│   │       └── trivy-operator.yaml # [Trivy Operator helm chart](https://github.com/aquasecurity/trivy-operator/tree/main/deploy/helm)
 │   └── production # Piemēri produkcijas videi
 │       └── monitoring
 │           ├── grafana.yaml
