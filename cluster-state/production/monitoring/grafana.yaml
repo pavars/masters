@@ -1,0 +1,139 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-global
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: "6.53.0"
+    helm:
+      values: |
+        fullnameOverride: grafana
+
+        deploymentStrategy:
+          type: Recreate
+
+        ingress:
+          enabled: true
+          annotations:
+            kubernetes.io/ingress.class: nginx-public
+          hosts:
+            - grafana.example.com
+          tls:
+          - hosts:
+              - grafana.example.com
+            secretName: wildcard-example-cert
+
+        # SSO izmantojot Google Authentication
+        grafana.ini:
+          auth.google:
+            enabled: true
+            client_id: $__file{/etc/secrets/auth_google/client_id}
+            client_secret: $__file{/etc/secrets/auth_google/client_secret}
+            scopes: https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
+            auth_url: https://accounts.google.com/o/oauth2/auth
+            token_url: https://accounts.google.com/o/oauth2/token
+            allowed_domains: example.com
+            hosted_domain: example.com
+          auth:
+            disable_login_form: true
+          rendering:
+            callback_url: https://grafana.example.com/
+          log:
+            filters: rendering:debug
+            # The full public facing url you use in browser, used for redirects and emails
+          server:
+            root_url: https://grafana.example.com/
+          users:
+            auto_assign_org_role: Viewer
+            viewers_can_edit: true
+          # unified alerting section
+          alerting:
+            enabled: false
+          unified_alerting:
+            enabled: true
+          dataproxy:
+            logging: false
+            timeout: 300
+
+        # Kubernetes Secret resurss, kurā glabājas Google Oauth autorizācijas dati
+        extraSecretMounts:
+          - name: auth-google-secret-mount
+            secretName: grafana-auth-google-secret
+            defaultMode: 0440
+            mountPath: /etc/secrets/auth_google
+            readOnly: true
+
+        sidecar:
+          datasources:
+            enabled: true
+            defaultDatasourceEnabled: false
+
+          dashboards:
+            enabled: true
+            label: grafana_dashboard
+            labelValue: 1
+            resource: configmap
+            searchNamespace: ALL
+            folder: /tmp/dashboards
+            folderAnnotation: grafana_folder
+            provider:
+              foldersFromFilesStructure: true
+
+        persistence:
+          type: pvc
+          enabled: true
+          accessModes:
+            - ReadWriteOnce
+          size: 10Gi
+
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+            - name: "Loki"
+              type: loki
+              url: http://loki-gateway
+            - name: Alertmananger
+              type: alertmanager
+              url: http://kube-prometheus-stack-alertmanager.monitoring.svc:9093
+              basicAuth: false
+              withCredentials: false
+              jsonData:
+                implementation: prometheus
+              access: proxy
+
+        imageRenderer:
+          enabled: true
+          grafanaProtocol: https
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+
+        serviceMonitor:
+          enabled: true
+          path: /metrics
+          labels:
+            prometheus: "main"
+          interval: 1m
+          scrapeTimeout: 30s
+        
+        resources:
+          requests:
+            cpu: "100m"
+            memory: 1Gi
+  destination:
+    name: in-cluster
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      selfHeal: true
