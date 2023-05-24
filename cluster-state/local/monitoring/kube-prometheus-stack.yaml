@@ -80,12 +80,7 @@ spec:
             enabled: false
 
           alertmanagerSpec:
-            alertmanagerConfiguration: 
-              name: alertmanager-config-global
             replicas: 1
-            alertmanagerConfigSelector:
-              matchLabels:
-                prometheus: main
 
             logFormat: json
             logLevel: info
@@ -114,7 +109,6 @@ spec:
           serviceAccount:
             create: true
             name: "prometheus"
-
 
           ingress:
             enabled: false
