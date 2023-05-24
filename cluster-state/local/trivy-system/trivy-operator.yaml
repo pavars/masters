@@ -46,7 +46,7 @@ spec:
 
   destination:
     name: in-cluster
-    namespace: trivy
+    namespace: trivy-system
   syncPolicy:
     automated: {}
     syncOptions:
