@@ -249,7 +249,7 @@ spec:
   ignoreDifferences:
     - kind: StatefulSet
       group: apps
-      name: loki-backend
+      name: loki-global
       namespace: monitoring
       jqPathExpressions:
         - .spec.persistentVolumeClaimRetentionPolicy

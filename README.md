@@ -30,10 +30,14 @@ kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' |
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 # Piekļūstam lokālajai ArgoCD videi no interneta pārlūka izmantojot lietotāju admin https://127.0.0.1:8080
-
 ```
 
 3. Gaidām, kad argocd nosinhronizēs monitoringa un žurnālēšanas rīkus
+
+```bash
+# Pieliekam anotāciju prometheus resursam, lai tas nosinhronizētos
+kubectl annotate crd prometheuses.monitoring.coreos.com argocd.argoproj.io/sync-options='Replace=true'
+```
 
 4. Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem
 ```bash
