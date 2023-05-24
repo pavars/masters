@@ -8,7 +8,9 @@ Jābūt pieejam lokāli ieinstalētam vienam no Kubernetes klāsteriem, komandas
 * [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) Nav pārbaudīts
 * [microk8s](https://microk8s.io/docs/getting-started) Nav pārbaudīts
 * [minikube](https://minikube.sigs.k8s.io/docs/start/) Nav pārbaudīts
+
 Un
+
 * [ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
 ## Running (Palaišana)
