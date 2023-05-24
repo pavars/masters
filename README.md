@@ -85,7 +85,51 @@ kubectl port-forward svc/kube-prometheus-stack-prometheus -n monitoring 8082:909
 # Demo (Podinfo lietotne)
 kubectl port-forward svc/demo-podinfo -n demo 8082:9898
 
+```
 
+## Projekta struktūra
+
+```bash
+master # Projekta mape
+├── argocd # ArgoCD resursu deklarācija
+│   ├── base # Kustomization pamats no kā tiek modificēts atbilstoši vajadzībām
+│   │   ├── applications.yaml # Šeit tiek definētas main-app un cadvisor, kas atbild par visu pārējo resursu sinhronizēšanu
+│   │   ├── argocd-cmd-params-cm-patch.yml
+│   │   ├── argocd-repo-server.yaml
+│   │   ├── kustomization.yaml
+│   │   ├── namespace.yaml
+│   │   ├── projects.yaml
+│   │   └── repository.yaml
+│   └── overlays # Overlayos tiek definētas izmaiņas Kustomize resursos, šajā gadījumā global definīcija
+│       └── global
+│           ├── argocd-app.yaml # Šeit tiek definēta argocd, kas atbild par argocd resursu sinhronizēšanu
+│           ├── argocd-cm.yaml
+│           ├── argocd-server-service.yaml
+│           └── kustomization.yaml
+├── cadvisor # Cadvisor nepieciešams tikai lokāli hostētām kubernetes instancēm, jo citādi netiek pareizi izvadīas metrikas
+│   └── base
+│       ├── daemonset.yaml
+│       ├── kustomization.yaml
+│       ├── namespace.yaml
+│       ├── serviceaccount.yaml
+│       ├── servicemonitor.yaml
+│       └── service.yaml
+├── cluster-state # ArgoCD lietotņu (Application) definīcijas
+│   ├── local # lokālais kubernetes klāsteris
+│   │   ├── demo # demo vide ar podinfo
+│   │   │   └── podinfoA.yaml
+│   │   └── monitoring # monitoringa vide
+│   │       ├── grafana.yaml # [Grafana helm chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana)
+│   │       ├── kube-prometheus-stack.yaml # [kube-prometheus-stack helm chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
+│   │       ├── loki.yaml # [Loki helm chart](https://github.com/grafana/loki/tree/main/production/helm/loki)
+│   │       └── promtail.yaml #[Promtail helm chart](https://github.com/grafana/helm-charts/tree/main/charts/promtail)
+│   └── production # Piemēri produkcijas videi
+│       └── monitoring
+│           ├── grafana.yaml
+│           ├── kube-prometheus-stack.yaml
+│           ├── loki.yaml
+│           └── promtail.yaml
+└── README.md
 ```
 
 ## Produkcijas vidē
