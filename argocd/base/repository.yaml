@@ -60,3 +60,14 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 stringData:
   url: https://github.com/pavars/masters.git
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cadvisor-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://github.com/google/cadvisor.git
