@@ -21,7 +21,7 @@ spec:
           create: true
 
         kubeScheduler:
-          enabled: false
+          enabled: true
 
         kubeEtcd:
           enabled: true
@@ -61,6 +61,8 @@ spec:
 
         kubelet:
           enabled: true
+          serviceMonitor:
+            cAdvisor: false
 
         grafana:
           enabled: false
