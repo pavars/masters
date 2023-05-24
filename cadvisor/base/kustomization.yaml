@@ -7,3 +7,5 @@ resources:
 - daemonset.yaml
 - namespace.yaml
 - serviceaccount.yaml
+- service.yaml
+- servicemonitor.yaml
