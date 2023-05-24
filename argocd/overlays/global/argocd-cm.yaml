@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  application.resourceTrackingMethod: annotation
+  statusbadge.enabled: "true"
+  users.anonymous.enabled: "false"
+  url: https://argocd.localhost
+  admin.enabled: "true" 

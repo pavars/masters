@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+data:
+  server.insecure: "true"
+  server.log.format: "json"
+  server.enable.gzip: "true"
+  reposerver.parallelism.limit: "10"
+  controller.log.format: "json"
+  reposerver.log.format: "json"
+  applicationsetcontroller.log.format: "json"
