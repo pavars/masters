@@ -30,10 +30,8 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/pavars/masters.git'
-    path: cadvisor
+    path: cadvisor/base
     targetRevision: main
-    directory:
-      recurse: true
   destination:
     namespace: cadvisor
     name: in-cluster
