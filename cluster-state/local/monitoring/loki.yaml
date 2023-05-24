@@ -161,6 +161,9 @@ spec:
           # Should authentication be enabled
           auth_enabled: false
 
+          commonConfig:
+            replication_factor: 1
+
           # Limits config
           limits_config:
             enforce_metric_name: false
@@ -218,30 +221,10 @@ spec:
           # that it's working correctly
           lokiCanary:
             enabled: true
-        write:
-          replicas: 1
-          # nodeSelector:
-          #   role: monitoring
-          resources:
-            requests:
-              cpu: "100m"
-              memory: 500Mi
         tableManager:
           enabled: false
-        read:
+        singleBinary:
           replicas: 1
-          legacyReadTarget: false
-          resources:
-            requests:
-              cpu: "100m"
-              memory: 500Mi
-        # Configuration for the backend pod(s)
-        backend:
-          replicas: 1
-          resources:
-            requests:
-              cpu: "100m"
-              memory: 250Mi
         ingress:
           enabled: false
 
