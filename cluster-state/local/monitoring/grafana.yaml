@@ -56,6 +56,37 @@ spec:
             provider:
               foldersFromFilesStructure: true
 
+        dashboardProviders: 
+          dashboardproviders.yaml:
+            apiVersion: 1
+            providers:
+            - name: 'default'
+              orgId: 1
+              folder: ''
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /var/lib/grafana/dashboards/default
+
+        ## Configure grafana dashboard to import
+        ## NOTE: To use dashboards you must also enable/configure dashboardProviders
+        ## ref: https://grafana.com/dashboards
+        ##
+        ## dashboards per provider, use provider name as key.
+        ##
+        dashboards:
+          default:
+            trivy-dashboard:
+              gnetId: 17813
+              revision: 2
+              datasource: Prometheus
+            trivy-aqua-dashboard:
+              gnetId: 16337
+              revision: 7
+              datasource: Prometheus
+
+
         persistence:
           type: pvc
           enabled: true
