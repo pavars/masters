@@ -41,7 +41,7 @@ spec:
 
   destination:
     name: in-cluster
-    namespace: test
+    namespace: demo
   syncPolicy:
     automated: {}
     syncOptions:
