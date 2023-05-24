@@ -17,8 +17,11 @@ git clone https://github.com/pavars/masters.git && cd masters
 
 2. Ieinstalējam ArgoCD resursus
 ```bash
-# Ieinstalējam argocd
+# Ieinstalējam argocd (reizēm jāpalaiž divas reizes, ja CRD nav laicīgi izveidojušies)
 kubectl apply -k argocd/overlays/global
+
+# Pieliekam Kubernetes anotāciju, lai argocd spētu izveidot CRD resursu
+kubectl annotate crd prometheuses.monitoring.coreos.com argocd.argoproj.io/sync-options='Replace=true'
 
 # Pārbaudām instalācijas statusu (visur jābūt READY 1/1 )
 kubectl get po -n argocd
