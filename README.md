@@ -1,1 +1,41 @@
-# masters
+# Maģistra Darba demo
+
+## Pre-requsites (Priekšnosacījumi)
+
+Jābūt pieejam lokāli ieinstalētam vienam no Kubernetes klāsteriem, komandas ir izpildāmas no WSL, Linux vai MacOS operetājsistēmām.
+
+* [Docker-Desktop](https://docs.docker.com/desktop/kubernetes/)
+* [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)
+* [microk8s](https://microk8s.io/docs/getting-started)
+
+## Running (Palaišana)
+
+1. Noklonējam git repozitoriju un ieejam koda mapē
+```bash
+git clone https://github.com/pavars/masters.git && cd masters
+```
+
+2. Ieinstalējam ArgoCD resursus
+```bash
+# Ieinstalējam argocd
+kubectl apply -k argocd/overlays/global
+
+# Pārbaudām instalācijas statusu (visur jābūt READY 1/1 )
+kubectl get po -n argocd
+
+# Iegūstam noklusējuma paroli
+kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+
+# Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem un monitorētu statusu
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+# Piekļūstam lokālajai ArgoCD videi no interneta pārlūka izmantojot lietotāju admin https://127.0.0.1:8080
+
+```
+
+3. Gaidām, kad argocd nosinhronizēs monitoringa un žurnālēšanas rīkus
+
+4. Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem
+```bash
+kubectl port-forward XXX yyy
+```

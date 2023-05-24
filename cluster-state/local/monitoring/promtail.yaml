@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promtail-global
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ops
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: promtail
+    targetRevision: "6.10.0"
+    helm:
+      values: |
+        fullnameOverride: promtail-global
+        # It is generally recommended to run multiple Promtail clients in parallel
+        # if you want to send to multiple remote Loki instances.
+        # https://grafana.com/docs/loki/latest/clients/promtail/configuration
+        config:
+          clients:
+            - url: http://loki-gateway/loki/api/v1/push
+              tenant_id: 1
+
+          snippets:
+            pipelineStages:
+              - cri: {}
+              - labeldrop:
+                - filename
+        
+        resources: 
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+        extraArgs:
+          - -client.external-labels=cluster=global-k8s
+          - -config.expand-env
+
+        serviceMonitor:
+          enabled: true
+          labels:
+            prometheus: main
+
+        initContainer:
+          - name: init
+            image: docker.io/busybox:1.33
+            imagePullPolicy: IfNotPresent
+            command:
+              - sh
+              - -c
+              - sysctl -w fs.inotify.max_user_instances=1024
+            securityContext:
+              privileged: true
+
+  destination:
+    name: in-cluster
+    namespace: monitoring

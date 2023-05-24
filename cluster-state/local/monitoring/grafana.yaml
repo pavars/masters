@@ -1,0 +1,107 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-global
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ops
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: "6.53.0"
+    helm:
+      values: |
+        fullnameOverride: grafana
+
+        deploymentStrategy:
+          type: Recreate
+
+        ingress:
+          enabled: false
+
+        grafana.ini:
+          auth:
+            disable_login_form: false
+          log:
+            filters: rendering:debug
+          server:
+            root_url: https://grafana.local/
+          users:
+            auto_assign_org_role: Viewer
+            viewers_can_edit: true
+          # unified alerting section
+          alerting:
+            enabled: false
+          unified_alerting:
+            enabled: true
+          dataproxy:
+            logging: false
+            timeout: 300
+
+        sidecar:
+          datasources:
+            enabled: true
+            defaultDatasourceEnabled: true
+
+          dashboards:
+            enabled: true
+            label: grafana_dashboard
+            labelValue: 1
+            resource: configmap
+            searchNamespace: ALL
+            folder: /tmp/dashboards
+            folderAnnotation: grafana_folder
+            provider:
+              foldersFromFilesStructure: true
+
+        persistence:
+          type: pvc
+          enabled: true
+          accessModes:
+            - ReadWriteOnce
+          size: 10Gi
+
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+            - name: "Loki"
+              type: loki
+              url: http://loki-gateway
+            - name: Alertmananger
+              type: alertmanager
+              url: http://kube-prometheus-stack-alertmanager.monitoring.svc:9093
+              basicAuth: false
+              withCredentials: false
+              jsonData:
+                implementation: prometheus
+              access: proxy
+
+        imageRenderer:
+          enabled: true
+          grafanaProtocol: https
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+
+        serviceMonitor:
+          enabled: true
+          path: /metrics
+          labels:
+            prometheus: "main"
+          interval: 1m
+          scrapeTimeout: 30s
+        
+        resources:
+          requests:
+            cpu: "100m"
+            memory: 1Gi
+  destination:
+    name: in-cluster
+    namespace: monitoring

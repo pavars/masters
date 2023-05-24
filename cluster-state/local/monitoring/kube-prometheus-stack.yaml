@@ -1,0 +1,175 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack-global
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ops
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: "45.9.1"
+    helm:
+      values: |
+        fullnameOverride: kube-prometheus-stack
+        commonLabels:
+          prometheus: main
+
+        defaultRules:
+          create: true
+
+        kubeScheduler:
+          enabled: false
+
+        kubeEtcd:
+          enabled: true
+
+        kubeProxy:
+          enabled: false
+
+        kubeControllerManager:
+          enabled: false
+
+        kubeStateMetrics:
+          enabled: true
+
+        kube-state-metrics:
+          prometheus:
+            monitor:
+              enabled: true
+              additionalLabels:
+                prometheus: main
+          fullnameOverride: kube-state-metrics
+
+        prometheus-node-exporter:
+          fullnameOverride: node-exporter
+          prometheus:
+            monitor:
+              enabled: true
+              additionalLabels:
+                prometheus: main
+
+        coreDns:
+          enabled: false
+
+        kubeDns:
+          enabled: false
+
+        kubelet:
+          enabled: true
+
+        grafana:
+          enabled: false
+          forceDeployDatasources: true
+          forceDeployDashboards: true
+          sidecar:
+            dashboards:
+              multicluster:
+                global:
+                  enabled: false
+                etcd:
+                  enabled: false
+
+        alertmanager:
+          enabled: true
+          ingress:
+            enabled: false
+
+          alertmanagerSpec:
+            alertmanagerConfiguration: 
+              name: alertmanager-config-global
+            replicas: 1
+            alertmanagerConfigSelector:
+              matchLabels:
+                prometheus: main
+
+            logFormat: json
+            logLevel: info
+
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 1Gi
+            resources:
+              requests:
+                cpu: "100m"
+                memory: 500Mi
+              limits:
+                cpu: "1"
+                memory: 1Gi
+
+
+        prometheusOperator:
+          thanosImage:
+            registry: quay.io
+            repository: thanos/thanos
+            tag: v0.31.0
+
+        prometheus:
+          enabled: true
+          monitor:
+            additionalLabels:
+              prometheus: main
+
+          serviceAccount:
+            create: true
+            name: "prometheus"
+
+
+          ingress:
+            enabled: false
+
+          prometheusSpec:
+            serviceAccountName: prometheus
+            enableAdminAPI: true
+            disableCompaction: true
+            scrapeInterval: 5s
+            evaluationInterval: 15s
+            retention: 2h
+            enableFeatures:
+              - "remote-write-receiver"
+            additionalScrapeConfigsSecret:
+              enabled: false
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 20Gi
+            resources:
+              requests:
+                cpu: "100m"
+                memory: 1Gi
+            externalLabels:
+              cluster: global-k8s
+            image:
+              registry: quay.io
+              repository: prometheus/prometheus
+              tag: v2.43.0
+              sha: ""
+
+            serviceMonitorSelector:
+              matchLabels:
+                prometheus: main
+            podMonitorSelector:
+              matchLabels:
+                prometheus: main
+            probeSelector:
+              matchLabels:
+                prometheus: main
+
+
+  destination:
+    name: in-cluster
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
