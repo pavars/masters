@@ -7,6 +7,7 @@ Jābūt pieejam lokāli ieinstalētam vienam no Kubernetes klāsteriem, komandas
 * [Docker-Desktop](https://docs.docker.com/desktop/kubernetes/)
 * [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)
 * [microk8s](https://microk8s.io/docs/getting-started)
+* [ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
 ## Running (Palaišana)
 
@@ -30,15 +31,19 @@ kubectl get po -n argocd
 kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 
 # Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem un monitorētu statusu
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-
 # Piekļūstam lokālajai ArgoCD videi no interneta pārlūka izmantojot lietotāju admin https://127.0.0.1:8080
+kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
-3. Gaidām, kad argocd nosinhronizēs monitoringa un žurnālēšanas rīkus Prometheus un Grafana, Loki sinhronizējam manuāli
+3. Gaidām, kad argocd nosinhronizēs monitoringa un žurnālēšanas rīkus, daži rīki jāsinhronizē manuāli
 
 ```bash
-# Pieliekam anotāciju prometheus resursam, lai tas nosinhronizētos
+# Ja ir ieinstalēts ArgoCD CLI, tad laižam sekojošo komandu, lai forsētu resursu sinhronizāciju
+# Ja nav argocd cli, tad kube-prometheus-stack-global lietotni vajag sinhronizēt no ArgoCD vadības paneļa izvēloties opcijas "Force" un "Replace"
+argocd app sync main-app
+argocd app sync kube-prometheus-stack-global --replace --resource :CustomResourceDefinition:
+
+# Pieliekam anotāciju prometheus resursam, lai tas turpinātu sinhronizēties
 kubectl annotate crd prometheuses.monitoring.coreos.com argocd.argoproj.io/sync-options='Replace=true'
 
 # Lai piekļūtu lokālajai Grafana instancei https://127.0.0.1:8081
