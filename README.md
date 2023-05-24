@@ -32,11 +32,17 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 # Piekļūstam lokālajai ArgoCD videi no interneta pārlūka izmantojot lietotāju admin https://127.0.0.1:8080
 ```
 
-3. Gaidām, kad argocd nosinhronizēs monitoringa un žurnālēšanas rīkus
+3. Gaidām, kad argocd nosinhronizēs monitoringa un žurnālēšanas rīkus Prometheus un Grafana, Loki sinhronizējam manuāli
 
 ```bash
 # Pieliekam anotāciju prometheus resursam, lai tas nosinhronizētos
 kubectl annotate crd prometheuses.monitoring.coreos.com argocd.argoproj.io/sync-options='Replace=true'
+
+# Lai piekļūtu lokālajai Grafana instancei https://127.0.0.1:8081
+kubectl port-forward svc/grafana -n monitoring 8081:80
+
+# Iegūstam grafanas admin paroli
+kubectl get secrets grafana -o jsonpath='{.data.admin-password}' | base64 -d
 ```
 
 4. Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem
