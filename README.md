@@ -19,9 +19,14 @@ Un
 
 ![Infrastruktūras pārskats](infra_scheme.png)
 
-Trivy Operator vadības paneļa piemērs no darbojošās sistēmas
+Trivy Operator vadības paneļa piemērs no darbojošās sistēmas, kurā ir attēlotas atrastās ievainojamības
 
 ![Trivy Operator Dashboard](trivy-operator.png)
+
+ArgoCD vadības panelis, kurā redzami objekti, kas ir sinhronizēti no github. Piebilde, šeit ir iespējams arī manuāli pievienot papildus resursu definīcijas, ja ir piekļuves tiesības.
+
+![ArgoCD Dashboard](argocd_demo.png)
+
 
 ## Running (Palaišana)
 
