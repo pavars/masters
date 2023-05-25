@@ -126,8 +126,8 @@ master # Projekta mape
 │           ├── argocd-cm.yaml
 │           ├── argocd-server-service.yaml
 │           └── kustomization.yaml
-├── cadvisor # Cadvisor nepieciešams tikai lokāli hostētām kubernetes instancēm, jo citādi netiek pareizi izvadīas metrikas
-│   └── base
+├── cadvisor # Cadvisor nepieciešams tikai lokāli hostētām kubernetes instancēm, jo citādi netiek pareizi izvadītas metrikas
+│   └── base # Tas nodrošina iespēju vākt metrikas no konteineriem. Kubernetes iebūvētais cadvisor lokālajā vidē izmanto Docker runtime, kas produkcijas vidē jau ir aizvietots ar containerd, lai izvadītu pareizās metrikas no iebūvētā cadvisor.
 │       ├── daemonset.yaml
 │       ├── kustomization.yaml
 │       ├── namespace.yaml
