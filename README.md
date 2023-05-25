@@ -13,6 +13,12 @@ Un
 
 * [ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
+Lai piekļūtu ievainojamību datubāzei un detalizēti parādītu identificētās ievainojamības un to CVE identifikatorus, ir nepieciešams izveidot github piekļuves atslēgu (personal access token) publiskajiem repozitorijiem un to ievietot github-token-secret.yaml faila veidnē, papildus tam nepieciešams ieslēgt Docker Desktop TCP servisu uz localhost:2375 un to norādīt trivy-operator konfigurācijā.
+
+```bash
+
+```
+
 ## Sistēmu pārskats
 
 Šīs izveidotās sistēmas modelis ir uzskatāms sekojošajā augsta līmeņa shēmā, kurā tiek attēlotas galvenās sistēmas komponentes un to darbības princips.
@@ -27,6 +33,9 @@ ArgoCD vadības panelis, kurā redzami objekti, kas ir sinhronizēti no github. 
 
 ![ArgoCD Dashboard](argocd_demo.png)
 
+Žurnālfailu lasīšanas piemērs no Kubernetes vides
+
+![Loki Dashborad](loki-promtail.png)
 
 ## Running (Palaišana)
 
@@ -39,6 +48,7 @@ git clone https://github.com/pavars/masters.git && cd masters
 ```bash
 # Ieinstalējam argocd (reizēm jāpalaiž divas reizes, ja CRD nav laicīgi izveidojušies)
 kubectl apply -k argocd/overlays/local
+# E7BecRQjWimYuwWG
 
 # Pārbaudām instalācijas statusu (visur jābūt READY 1/1 )
 kubectl get po -n argocd
@@ -54,10 +64,11 @@ kubectl get po -n argocd
 
 # Iegūstam noklusējuma paroli
 kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' -n argocd | base64 -d
-
+# E7BecRQjWimYuwWGE7BecRQjWimYuwWGE7BecRQjWimYuwWG
 
 # Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem un monitorētu statusu
 # Piekļūstam lokālajai ArgoCD videi no interneta pārlūka izmantojot lietotāju admin https://127.0.0.1:8080
+# terminālis jāatstāj vaļā, lai nodrošinātu porta pārsūtīšanu
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
@@ -77,18 +88,20 @@ argocd login localhost:8080
 argocd app sync main-app
 argocd app sync loki-global
 argocd app sync kube-prometheus-stack-global --replace --resource apiextensions.k8s.io:CustomResourceDefinition:prometheuses.monitoring.coreos.com
-# Ja šeit iegūstam Erroru, tad apturam to no komandrindas:
+# Ja šeit iegūstam Erroru, tad apturam to no komandrindas un vēlreiz sinhronizējam prometheus:
 # FATA[0000] rpc error: code = FailedPrecondition desc = another operation is already in progress
 argocd app terminate-op kube-prometheus-stack-global
+argocd app sync kube-prometheus-stack-global --replace --resource apiextensions.k8s.io:CustomResourceDefinition:prometheuses.monitoring.coreos.com
 
 # Pieliekam anotāciju prometheus resursam, lai tas turpinātu sinhronizēties
 kubectl annotate crd prometheuses.monitoring.coreos.com argocd.argoproj.io/sync-options='Replace=true'
 
+# Iegūstam grafanas lietotāja admin paroli
+kubectl get secrets grafana -n monitoring -o jsonpath='{.data.admin-password}' | base64 -d
+
 # Lai piekļūtu lokālajai Grafana instancei https://127.0.0.1:8081
 kubectl port-forward svc/grafana -n monitoring 8081:80
 
-# Iegūstam grafanas admin paroli
-kubectl get secrets grafana -n monitoring -o jsonpath='{.data.admin-password}' | base64 -d
 ```
 
 4. Ieslēdzam lokālo portu pārnešanu uz kubernetes vidi, lai piekļūtu vadības paneļiem
