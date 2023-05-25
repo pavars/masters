@@ -13,6 +13,16 @@ Un
 
 * [ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
+## Sistēmu pārskats
+
+Šīs izveidotās sistēmas modelis ir uzskatāms sekojošajā augsta līmeņa shēmā, kurā tiek attēlotas galvenās sistēmas komponentes un to darbības princips.
+
+![Infrastruktūras pārskats](infra_scheme.png)
+
+Trivy Operator vadības paneļa piemērs no darbojošās sistēmas
+
+![Trivy Operator Dashboard](trivy-operator.png)
+
 ## Running (Palaišana)
 
 1. Noklonējam git repozitoriju un ieejam koda mapē
@@ -80,6 +90,9 @@ kubectl get secrets grafana -n monitoring -o jsonpath='{.data.admin-password}' |
 ```bash
 # Grafana
 kubectl port-forward svc/grafana -n monitoring 8081:80
+#Noderīgākie paneļi:
+# Trivy Operator - Vulnerabilities
+# Kubernetes Compute Resources Namespace Workloads
 
 # Prometheus
 kubectl port-forward svc/kube-prometheus-stack-prometheus -n monitoring 8082:9090
