@@ -17,7 +17,7 @@ Un
 
 Šīs izveidotās sistēmas modelis ir uzskatāms sekojošajā augsta līmeņa shēmā, kurā tiek attēlotas galvenās sistēmas komponentes un to darbības princips.
 
-![Infrastruktūras pārskats](infra_scheme.png)
+![Infrastruktūras pārskats](infra_scheme1.png)
 
 Trivy Operator vadības paneļa piemērs no darbojošās sistēmas, kurā ir attēlotas atrastās ievainojamības
 
