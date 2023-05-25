@@ -38,7 +38,7 @@ git clone https://github.com/pavars/masters.git && cd masters
 2. Ieinstalējam ArgoCD resursus
 ```bash
 # Ieinstalējam argocd (reizēm jāpalaiž divas reizes, ja CRD nav laicīgi izveidojušies)
-kubectl apply -k argocd/overlays/global
+kubectl apply -k argocd/overlays/local
 
 # Pārbaudām instalācijas statusu (visur jābūt READY 1/1 )
 kubectl get po -n argocd
@@ -121,7 +121,7 @@ master # Projekta mape
 │   │   ├── projects.yaml
 │   │   └── repository.yaml
 │   └── overlays # Overlayos tiek definētas izmaiņas Kustomize resursos, šajā gadījumā global definīcija
-│       └── global
+│       └── local
 │           ├── argocd-app.yaml # Šeit tiek definēta argocd, kas atbild par argocd resursu sinhronizēšanu
 │           ├── argocd-cm.yaml
 │           ├── argocd-server-service.yaml

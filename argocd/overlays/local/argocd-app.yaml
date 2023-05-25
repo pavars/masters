@@ -8,7 +8,7 @@ spec:
   project: argocd
   source:
     repoURL: 'https://github.com/pavars/masters.git'
-    path: argocd/overlays/global
+    path: argocd/overlays/local
     targetRevision: main
   destination:
     namespace: argocd
